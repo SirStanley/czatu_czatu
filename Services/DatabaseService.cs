@@ -5,11 +5,7 @@ namespace CzatuCzatu.Services
 {
     public class DatabaseService
     {
-        // Dane do połączenia z Twoim XAMPP
-        // Server=localhost -> Twój komputer
-        // Database=czatu_czatu_db -> Nazwa bazy, którą stworzyłeś (lub stworzysz) w phpMyAdmin
-        // Uid=root -> Domyślny użytkownik XAMPP
-        // Pwd= -> Domyślnie brak hasła w XAMPP
+
         private readonly string _connectionString = "Server=localhost;Database=czatu_czatu_db;Uid=root;Pwd=;";
 
         public MySqlConnection GetConnection()
