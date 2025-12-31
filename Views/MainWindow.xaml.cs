@@ -2,45 +2,39 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Threading; // Potrzebne do DispatcherTimer
+using System.Windows.Threading;
 using CzatuCzatu.Models;
 using CzatuCzatu.Services;
 using MySqlConnector;
 
 namespace CzatuCzatu.Views
 {
-    /// <summary>
-    /// Logika interakcji dla klasy MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         // POLA KLASY
         private DispatcherTimer _timer;
-        private int _activeChatId = 0; // Przechowuje ID osoby, z którą aktualnie piszemy
+        private int _activeChatId = 0;
+        private int _contactUpdateCounter = 0; // Licznik do odświeżania listy kontaktów
 
         public MainWindow()
         {
             InitializeComponent();
 
-            // 1. Wyświetlanie nazwy zalogowanego użytkownika
             if (UserSession.CurrentUsername != null)
             {
                 LblCurrentUsername.Text = UserSession.CurrentUsername;
             }
 
-            // 2. Test połączenia
             var db = new DatabaseService();
             if (db.TestConnection())
                 this.Title = "Czatu-Czatu - Połączono";
             else
                 this.Title = "Czatu-Czatu - Brak połączenia z bazą";
 
-            // 3. Ładowanie kontaktów na start
             LoadContacts();
 
-            // 4. Konfiguracja Timera do odświeżania wiadomości "na żywo"
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1); // Odświeżaj co 1 sekundę
+            _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
             _timer.Start();
         }
@@ -48,28 +42,39 @@ namespace CzatuCzatu.Views
         // --- LOGIKA TIMERA ---
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            // Odświeżaj wiadomości tylko jeśli wybraliśmy kogoś z listy
+            // 1. Odświeżaj wiadomości w otwartym czacie (co 1 sekundę)
             if (_activeChatId != 0)
             {
                 LoadMessages(_activeChatId);
+            }
+
+            // 2. KROK 3: Odświeżanie listy kontaktów i statusów halo (co 3 sekundy)
+            _contactUpdateCounter++;
+            if (_contactUpdateCounter >= 3)
+            {
+                LoadContacts();
+                _contactUpdateCounter = 0;
             }
         }
 
         private void LoadContacts()
         {
+            // Zapamiętujemy ID wybranego znajomego, aby nie stracić zaznaczenia przy odświeżeniu
+            int selectedId = (_activeChatId != 0) ? _activeChatId : -1;
+
             LstContacts.Items.Clear();
 
             try
             {
-                using (var conn = new DatabaseService().GetConnection())
+                using (var conn = new Services.DatabaseService().GetConnection())
                 {
                     conn.Open();
                     string sql = @"
-                        SELECT u.id, u.username 
+                        SELECT u.id, u.username, u.is_online,
+                        (SELECT COUNT(*) FROM messages m WHERE m.sender_id = u.id AND m.receiver_id = @myId AND m.is_read = 0) as new_count
                         FROM friends f
                         JOIN users u ON (f.user_id = u.id OR f.friend_id = u.id)
-                        WHERE (f.user_id = @myId OR f.friend_id = @myId) 
-                        AND u.id != @myId";
+                        WHERE (f.user_id = @myId OR f.friend_id = @myId) AND u.id != @myId";
 
                     using (var cmd = new MySqlCommand(sql, conn))
                     {
@@ -78,20 +83,27 @@ namespace CzatuCzatu.Views
                         {
                             while (reader.Read())
                             {
-                                LstContacts.Items.Add(new ContactItem
+                                var contact = new ContactItem
                                 {
                                     Id = reader.GetInt32("id"),
-                                    Name = reader.GetString("username")
-                                });
+                                    Name = reader.GetString("username"),
+                                    IsOnline = reader.GetInt32("is_online") == 1,
+                                    HasNewMessages = reader.GetInt32("new_count") > 0
+                                };
+
+                                LstContacts.Items.Add(contact);
+
+                                // Przywracamy zaznaczenie wizualne
+                                if (contact.Id == selectedId)
+                                {
+                                    LstContacts.SelectedItem = contact;
+                                }
                             }
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Błąd ładowania kontaktów: " + ex.Message);
-            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("Błąd LoadContacts: " + ex.Message); }
         }
 
         private void BtnAddFriend_Click(object sender, RoutedEventArgs e)
@@ -116,8 +128,8 @@ namespace CzatuCzatu.Views
                 using (var conn = new DatabaseService().GetConnection())
                 {
                     conn.Open();
-                    string sql = @"INSERT INTO messages (sender_id, receiver_id, message_type, content) 
-                                   VALUES (@myId, @friendId, 'text', @txt)";
+                    string sql = @"INSERT INTO messages (sender_id, receiver_id, message_type, content, is_read) 
+                                   VALUES (@myId, @friendId, 'text', @txt, 0)";
 
                     using (var cmd = new MySqlCommand(sql, conn))
                     {
@@ -129,7 +141,6 @@ namespace CzatuCzatu.Views
                     }
                 }
 
-                // Dodajemy od razu do UI i czyścimy pole
                 AddMessageToUI(text, true);
                 TxtMessage.Clear();
                 ChatScrollViewer.ScrollToEnd();
@@ -142,7 +153,22 @@ namespace CzatuCzatu.Views
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {
-            _timer.Stop(); // Zatrzymujemy timer przed wylogowaniem
+            try
+            {
+                using (var conn = new Services.DatabaseService().GetConnection())
+                {
+                    conn.Open();
+                    string sql = "UPDATE users SET is_online = 0 WHERE id = @id";
+                    using (var cmd = new MySqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", UserSession.CurrentUserId);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("Błąd Logout: " + ex.Message); }
+
+            _timer.Stop();
             UserSession.CurrentUserId = 0;
             UserSession.CurrentUsername = null;
 
@@ -155,8 +181,25 @@ namespace CzatuCzatu.Views
         {
             if (LstContacts.SelectedItem is ContactItem selectedFriend)
             {
+                _activeChatId = selectedFriend.Id;
                 LblChatPartner.Text = "Rozmowa z: " + selectedFriend.Name;
-                _activeChatId = selectedFriend.Id; // Ustawiamy aktywnego rozmówcę dla Timera
+
+                // Natychmiastowe oznaczanie wiadomości jako przeczytane po kliknięciu
+                try
+                {
+                    using (var conn = new Services.DatabaseService().GetConnection())
+                    {
+                        conn.Open();
+                        string sql = "UPDATE messages SET is_read = 1 WHERE sender_id = @friendId AND receiver_id = @myId";
+                        using (var cmd = new MySqlCommand(sql, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@friendId", _activeChatId);
+                            cmd.Parameters.AddWithValue("@myId", UserSession.CurrentUserId);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+                catch (Exception ex) { System.Diagnostics.Debug.WriteLine("Błąd Update Read: " + ex.Message); }
 
                 LoadMessages(_activeChatId);
             }
@@ -164,10 +207,8 @@ namespace CzatuCzatu.Views
 
         private void LoadMessages(int friendId)
         {
-            // Zapamiętujemy pozycję scrolla, aby nie skakał co sekundę, jeśli użytkownik coś czyta
             bool isAtBottom = ChatScrollViewer.VerticalOffset >= ChatScrollViewer.ScrollableHeight;
 
-            // Pobieramy wiadomości z bazy
             try
             {
                 using (var conn = new DatabaseService().GetConnection())
@@ -187,10 +228,7 @@ namespace CzatuCzatu.Views
 
                         using (var reader = cmd.ExecuteReader())
                         {
-                            // Sprawdzamy, czy liczba wiadomości się zmieniła, żeby uniknąć mrugania
-                            // (Uproszczona wersja: czyścimy i dodajemy, jeśli są nowe lub przy zmianie kontaktu)
                             ChatItemsControl.Items.Clear();
-
                             while (reader.Read())
                             {
                                 int senderId = reader.GetInt32("sender_id");
@@ -201,14 +239,9 @@ namespace CzatuCzatu.Views
                         }
                     }
                 }
-
                 if (isAtBottom) ChatScrollViewer.ScrollToEnd();
             }
-            catch (Exception ex)
-            {
-                // Nie wyświetlamy MessageBoxa w Timerze, bo zasypie użytkownika błędami
-                System.Diagnostics.Debug.WriteLine("Błąd Timera: " + ex.Message);
-            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine("Błąd LoadMessages: " + ex.Message); }
         }
 
         private void AddMessageToUI(string text, bool isMe)
@@ -243,6 +276,10 @@ namespace CzatuCzatu.Views
         {
             public int Id { get; set; }
             public required string Name { get; set; }
+            public bool IsOnline { get; set; }
+            public Brush StatusColor => IsOnline ? Brushes.LimeGreen : Brushes.Red;
+            public bool HasNewMessages { get; set; }
+            public Visibility NewBadgeVisibility => HasNewMessages ? Visibility.Visible : Visibility.Collapsed;
             public override string ToString() => Name;
         }
     }

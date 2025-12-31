@@ -2,6 +2,7 @@
 using System.Windows;
 using CzatuCzatu.Services;
 using MySqlConnector;
+using System.Windows.Input;
 using System.Text.RegularExpressions;
 
 namespace CzatuCzatu.Views
@@ -93,6 +94,35 @@ namespace CzatuCzatu.Views
             WelcomeWindow welcome = new WelcomeWindow();
             welcome.Show();
             this.Close();
+        }
+        // --- Logika dla pierwszego hasła ---
+        private void BtnShowPassword_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TxtVisiblePassword.Text = TxtPassword.Password;
+            TxtPassword.Visibility = Visibility.Collapsed;
+            TxtVisiblePassword.Visibility = Visibility.Visible;
+        }
+
+        private void BtnShowPassword_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TxtVisiblePassword.Visibility = Visibility.Collapsed;
+            TxtPassword.Visibility = Visibility.Visible;
+            TxtPassword.Focus();
+        }
+
+        // --- Logika dla powtórzenia hasła ---
+        private void BtnShowConfirmPassword_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TxtVisibleConfirmPassword.Text = TxtConfirmPassword.Password;
+            TxtConfirmPassword.Visibility = Visibility.Collapsed;
+            TxtVisibleConfirmPassword.Visibility = Visibility.Visible;
+        }
+
+        private void BtnShowConfirmPassword_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TxtVisibleConfirmPassword.Visibility = Visibility.Collapsed;
+            TxtConfirmPassword.Visibility = Visibility.Visible;
+            TxtConfirmPassword.Focus();
         }
     }
 }

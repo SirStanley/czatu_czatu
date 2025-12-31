@@ -32,3 +32,4 @@ C:\Users\48533\Desktop\UBB.Rok3\IO\CzatuCzatu\obj\Debug\net8.0-windows\Views\Log
 C:\Users\48533\Desktop\UBB.Rok3\IO\CzatuCzatu\obj\Debug\net8.0-windows\Views\LoginWindow.baml
 C:\Users\48533\Desktop\UBB.Rok3\IO\CzatuCzatu\obj\Debug\net8.0-windows\Views\AddFriendWindow.baml
 C:\Users\48533\Desktop\UBB.Rok3\IO\CzatuCzatu\obj\Debug\net8.0-windows\Views\AddFriendWindow.g.cs
+C:\Users\48533\Desktop\UBB.Rok3\IO\CzatuCzatu\obj\Debug\net8.0-windows\CzatuCzatu.sourcelink.json

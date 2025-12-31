@@ -30,8 +30,12 @@ public partial class LoginWindow : Window
             using (var conn = _dbService.GetConnection())
             {
                 conn.Open();
-                // Szukamy użytkownika o podanym loginie i haśle
+
+                // 1. Sprawdzamy czy użytkownik istnieje
                 string sql = "SELECT id, username FROM users WHERE username = @user AND password_hash = @pass";
+                int loggedUserId = -1;
+                string loggedUsername = "";
+
                 using (var cmd = new MySqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("@user", user);
@@ -41,31 +45,45 @@ public partial class LoginWindow : Window
                     {
                         if (reader.Read())
                         {
-                            // SUKCES: Zapisujemy dane do sesji
-                            UserSession.CurrentUserId = reader.GetInt32("id");
-                            UserSession.CurrentUsername = reader.GetString("username");
-
-                            MessageBox.Show($"Witaj {UserSession.CurrentUsername}! Logowanie pomyślne.");
-
-                            // Tu otworzymy główne okno czatu (MainWindow)
-                            MainWindow chatWin = new MainWindow();
-                            chatWin.Show();
-                            this.Close();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Błędny login lub hasło.");
+                            loggedUserId = reader.GetInt32("id");
+                            loggedUsername = reader.GetString("username");
                         }
                     }
+                }
+
+                // 2. Jeśli logowanie się powiodło (znaleźliśmy ID)
+                if (loggedUserId != -1)
+                {
+                    // Zapisujemy dane do sesji statycznej
+                    UserSession.CurrentUserId = loggedUserId;
+                    UserSession.CurrentUsername = loggedUsername;
+
+                    // --- NOWOŚĆ: AKTUALIZACJA STATUSU ONLINE ---
+                    string updateStatusSql = "UPDATE users SET is_online = 1 WHERE id = @id";
+                    using (var updateCmd = new MySqlCommand(updateStatusSql, conn))
+                    {
+                        updateCmd.Parameters.AddWithValue("@id", loggedUserId);
+                        updateCmd.ExecuteNonQuery();
+                    }
+
+                    MessageBox.Show($"Witaj {UserSession.CurrentUsername}! Logowanie pomyślne.");
+
+                    // Otwieramy główne okno
+                    MainWindow chatWin = new MainWindow();
+                    chatWin.Show();
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Błędny login lub hasło.");
                 }
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Błąd: " + ex.Message);
+            MessageBox.Show("Błąd podczas logowania: " + ex.Message);
         }
     }
-
     private void BtnBack_Click(object sender, RoutedEventArgs e)
     {
         new WelcomeWindow().Show();
