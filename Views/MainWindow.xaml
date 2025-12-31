@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Czatu-Czatu" Height="600" Width="900"
+        Title="Czatu-Czatu" Height="650" Width="1000"
         WindowStartupLocation="CenterScreen" Background="#F0F2F5">
 
     <Window.Resources>
@@ -12,7 +12,7 @@
             <Setter Property="Background" Value="#007ACC"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Padding" Value="15,5"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Template">
@@ -26,6 +26,9 @@
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="border" Property="Background" Value="#005A9E"/>
                             </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#004578"/>
+                            </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -35,7 +38,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280"/>
+            <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -47,26 +50,23 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Border Grid.Row="0" Background="#F8F9FA" Padding="15">
+                <Border Grid.Row="0" Background="#F8F9FA" Padding="15" BorderBrush="#EEEEEE" BorderThickness="0,0,0,1">
                     <Grid>
                         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
                             <TextBlock x:Name="LblCurrentUsername" Text="Mój Profil" FontSize="18" FontWeight="Bold" Foreground="#007ACC"/>
                             <TextBlock Text="Dostępny" FontSize="12" Foreground="Green"/>
                         </StackPanel>
 
-                        <Button x:Name="BtnLogout" Width="36" Height="36" Click="BtnLogout_Click"
-        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10"
-        Cursor="Hand" ToolTip="Wyloguj">
+                        <Button x:Name="BtnLogout" Width="32" Height="32" Click="BtnLogout_Click"
+                                HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Cursor="Hand" ToolTip="Wyloguj">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Grid>
                                         <Ellipse x:Name="Background" Fill="#FF4444"/>
-
-                                        <Canvas Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <Path Stroke="White" StrokeThickness="2" 
-                          Data="M 10,2 L 10,10" />
-                                            <Path Stroke="White" StrokeThickness="2" 
-                          Data="M 6,5 A 7,7 0 1 0 14,5" />
+                                        <Canvas Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" Data="M 8,3 L 8,9" />
+                                            <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" Data="M 4.5,5 A 5,5 0 1 0 11.5,5" />
                                         </Canvas>
                                     </Grid>
                                     <ControlTemplate.Triggers>
@@ -83,11 +83,11 @@
                 <ListBox Grid.Row="1" x:Name="LstContacts" BorderThickness="0" Background="Transparent" Margin="5" SelectionChanged="LstContacts_SelectionChanged">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border x:Name="ItemBorder" Background="Transparent" CornerRadius="12" Margin="2" Padding="8">
+                            <Border x:Name="ItemBorder" Background="Transparent" CornerRadius="10" Margin="2" Padding="10">
                                 <Grid>
                                     <StackPanel Orientation="Horizontal">
                                         <Grid Margin="0,0,12,0">
-                                            <Ellipse Width="44" Height="44" Fill="{Binding StatusColor}" Opacity="0.5"/>
+                                            <Ellipse Width="44" Height="44" Fill="{Binding StatusColor}" Opacity="0.3"/>
                                             <Border Background="#007ACC" Width="36" Height="36" CornerRadius="18" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding Name[0]}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="16"/>
                                             </Border>
@@ -96,10 +96,9 @@
                                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontSize="15" FontWeight="SemiBold" Foreground="#333"/>
                                     </StackPanel>
 
-                                    <Border Background="#FF4444" CornerRadius="8" Padding="5,1" 
-                            HorizontalAlignment="Right" VerticalAlignment="Bottom" 
-                            Margin="0,0,5,2"
-                            Visibility="{Binding NewBadgeVisibility}">
+                                    <Border Background="#FF4444" CornerRadius="8" Padding="6,2" 
+                                            HorizontalAlignment="Right" VerticalAlignment="Center" 
+                                            Visibility="{Binding NewBadgeVisibility}">
                                         <TextBlock Text="NEW" FontSize="9" FontWeight="Bold" Foreground="White"/>
                                     </Border>
                                 </Grid>
@@ -139,20 +138,18 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="60"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="80"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="White" Padding="15,0">
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock x:Name="LblChatPartner" Text="Wybierz osobę z listy" FontSize="16" FontWeight="SemiBold"/>
-                </StackPanel>
+            <Border Grid.Row="0" Background="White" Padding="20,0" BorderBrush="#EEEEEE" BorderThickness="0,0,0,1">
+                <TextBlock x:Name="LblChatPartner" Text="Wybierz osobę z listy" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
             </Border>
 
             <ScrollViewer Grid.Row="1" x:Name="ChatScrollViewer" Background="#E5DDD5">
-                <ItemsControl x:Name="ChatItemsControl" Margin="10"/>
+                <ItemsControl x:Name="ChatItemsControl" Margin="15"/>
             </ScrollViewer>
 
-            <Border Grid.Row="2" Background="White" BorderBrush="#D1D1D1" BorderThickness="0,1,0,0" Padding="10">
+            <Border Grid.Row="2" Background="White" BorderBrush="#D1D1D1" BorderThickness="0,1,0,0" Padding="15">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -160,19 +157,24 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" Content="📎" FontSize="20" Background="Transparent" BorderThickness="0" Margin="0,0,10,0" Cursor="Hand"/>
+                    <Button Grid.Column="0" x:Name="BtnAttachFile" Content="📎" Width="40" Height="40" 
+                            FontSize="18" Background="Transparent" BorderThickness="0" Cursor="Hand"
+                            Click="BtnAttachFile_Click" Margin="0,0,10,0"/>
 
-                    <TextBox Grid.Column="1" x:Name="TxtMessage" Padding="10" FontSize="14" VerticalContentAlignment="Center" BorderBrush="#D1D1D1">
+                    <TextBox Grid.Column="1" x:Name="TxtMessage" Padding="15,8" FontSize="14" 
+                             VerticalContentAlignment="Center" BorderBrush="#D1D1D1" 
+                             AcceptsReturn="False">
                         <TextBox.Resources>
                             <Style TargetType="{x:Type Border}">
-                                <Setter Property="CornerRadius" Value="15"/>
+                                <Setter Property="CornerRadius" Value="20"/>
                             </Style>
                         </TextBox.Resources>
                     </TextBox>
 
                     <Button Grid.Column="2" x:Name="BtnSendMessage" Content="Wyślij" 
                             Style="{StaticResource ModernButton}" 
-                            Width="80" Margin="10,0,0,0" Click="BtnSendMessage_Click"/>
+                            Width="90" Height="40" Margin="10,0,0,0" 
+                            Click="BtnSendMessage_Click" IsDefault="True"/>
                 </Grid>
             </Border>
         </Grid>

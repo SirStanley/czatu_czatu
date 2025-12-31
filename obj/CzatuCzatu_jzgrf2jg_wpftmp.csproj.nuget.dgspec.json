@@ -49,10 +49,6 @@
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
           "dependencies": {
-            "BCrypt.Net-Next": {
-              "target": "Package",
-              "version": "[4.0.3, )"
-            },
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.4.0, )"
