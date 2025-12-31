@@ -96,33 +96,42 @@ namespace CzatuCzatu.Views
             this.Close();
         }
         // --- Logika dla pierwszego hasła ---
-        private void BtnShowPassword_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        // --- OBSŁUGA PIERWSZEGO HASŁA ---
+        // 1. Metoda wywoływana przy naciśnięciu (MouseDown)
+        private void BtnShowAllPasswords_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            // Przepisujemy wartości do obu pól tekstowych
             TxtVisiblePassword.Text = TxtPassword.Password;
+            TxtVisibleConfirmPassword.Text = TxtConfirmPassword.Password;
+
+            // Odkrywamy oba TextBoxy
             TxtPassword.Visibility = Visibility.Collapsed;
             TxtVisiblePassword.Visibility = Visibility.Visible;
-        }
 
-        private void BtnShowPassword_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            TxtVisiblePassword.Visibility = Visibility.Collapsed;
-            TxtPassword.Visibility = Visibility.Visible;
-            TxtPassword.Focus();
-        }
-
-        // --- Logika dla powtórzenia hasła ---
-        private void BtnShowConfirmPassword_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            TxtVisibleConfirmPassword.Text = TxtConfirmPassword.Password;
             TxtConfirmPassword.Visibility = Visibility.Collapsed;
             TxtVisibleConfirmPassword.Visibility = Visibility.Visible;
         }
 
-        private void BtnShowConfirmPassword_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        // 2. Metoda wywoływana przy puszczeniu przycisku (MouseUp)
+        private void BtnShowAllPasswords_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            HideAllPasswords();
+        }
+
+        // 3. Metoda wywoływana przy zjechaniu myszką z ikony (MouseLeave)
+        private void BtnShowAllPasswords_MouseLeave(object sender, MouseEventArgs e)
+        {
+            HideAllPasswords();
+        }
+
+        // Funkcja pomocnicza ukrywająca tekst w obu polach
+        private void HideAllPasswords()
+        {
+            TxtVisiblePassword.Visibility = Visibility.Collapsed;
+            TxtPassword.Visibility = Visibility.Visible;
+
             TxtVisibleConfirmPassword.Visibility = Visibility.Collapsed;
             TxtConfirmPassword.Visibility = Visibility.Visible;
-            TxtConfirmPassword.Focus();
         }
     }
 }

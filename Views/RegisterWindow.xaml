@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Rejestracja - CzatuCzatu" Height="500" Width="400" WindowStartupLocation="CenterScreen">
     <Grid Background="#F7F9FC">
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="320">
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
             <TextBlock Text="Stwórz konto" FontSize="24" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Center"/>
 
             <TextBlock Text="Nazwa użytkownika:"/>
@@ -11,41 +11,22 @@
 
             <TextBlock Text="Hasło:"/>
             <Grid Height="30" Margin="0,5,0,15">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="40"/>
-                </Grid.ColumnDefinitions>
-
-                <Grid Grid.Column="0">
-                    <PasswordBox x:Name="TxtPassword" Height="30" Padding="5,0" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtVisiblePassword" Height="30" Padding="5,0" VerticalContentAlignment="Center" Visibility="Collapsed"/>
-                </Grid>
-
-                <Border Grid.Column="1" Margin="5,0,0,0" Background="#E0E6ED" CornerRadius="4" Cursor="Hand"
-                        PreviewMouseDown="BtnShowPassword_MouseDown" 
-                        PreviewMouseUp="BtnShowPassword_MouseUp" 
-                        MouseLeave="BtnShowPassword_MouseUp">
-                    <TextBlock Text="👁" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#555"/>
-                </Border>
+                <PasswordBox x:Name="TxtPassword" Height="30" Padding="5,0,30,0" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="TxtVisiblePassword" Height="30" Padding="5,0,30,0" VerticalContentAlignment="Center" Visibility="Collapsed"/>
             </Grid>
 
             <TextBlock Text="Powtórz hasło:"/>
-            <Grid Height="30" Margin="0,5,0,20">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="40"/>
-                </Grid.ColumnDefinitions>
+            <Grid Height="30" Margin="0,5,0,25">
+                <PasswordBox x:Name="TxtConfirmPassword" Height="30" Padding="5,0,30,0" VerticalContentAlignment="Center"/>
+                <TextBox x:Name="TxtVisibleConfirmPassword" Height="30" Padding="5,0,30,0" VerticalContentAlignment="Center" Visibility="Collapsed"/>
 
-                <Grid Grid.Column="0">
-                    <PasswordBox x:Name="TxtConfirmPassword" Height="30" Padding="5,0" VerticalContentAlignment="Center"/>
-                    <TextBox x:Name="TxtVisibleConfirmPassword" Height="30" Padding="5,0" VerticalContentAlignment="Center" Visibility="Collapsed"/>
-                </Grid>
-
-                <Border Grid.Column="1" Margin="5,0,0,0" Background="#E0E6ED" CornerRadius="4" Cursor="Hand"
-                        PreviewMouseDown="BtnShowConfirmPassword_MouseDown" 
-                        PreviewMouseUp="BtnShowConfirmPassword_MouseUp" 
-                        MouseLeave="BtnShowConfirmPassword_MouseUp">
-                    <TextBlock Text="👁" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#555"/>
+                <Border x:Name="BtnShowAllPasswords"
+                        HorizontalAlignment="Right" Width="30" Height="28" 
+                        Background="Transparent" Cursor="Hand" Margin="0,1,1,1"
+                        PreviewMouseDown="BtnShowAllPasswords_MouseDown" 
+                        PreviewMouseUp="BtnShowAllPasswords_MouseUp" 
+                        MouseLeave="BtnShowAllPasswords_MouseLeave">
+                    <TextBlock Text="👁" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#AAA"/>
                 </Border>
             </Grid>
 

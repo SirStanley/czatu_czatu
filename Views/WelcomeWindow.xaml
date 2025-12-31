@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CzatuCzatu.Views"
         mc:Ignorable="d"
-        Title="WelcomeWindow" Height="450" Width="800">
+        Title="WelcomeWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
     <Grid Background="#F7F9FC">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                 <Border Background="#007ACC" Width="80" Height="80" CornerRadius="20" Margin="0,0,0,20">
