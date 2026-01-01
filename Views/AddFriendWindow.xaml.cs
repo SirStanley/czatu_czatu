@@ -6,8 +6,11 @@ using MySqlConnector;
 
 namespace CzatuCzatu.Views;
 
+using MessageBox = System.Windows.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 public partial class AddFriendWindow : Window
 {
+
     private DatabaseService _dbService = new DatabaseService();
 
     public AddFriendWindow()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -17,13 +18,12 @@ namespace CzatuCzatu.Views
     /// Logika interakcji dla klasy WelcomeWindow.xaml
     public partial class WelcomeWindow : Window
     {
+        [SupportedOSPlatform("windows")]
         public WelcomeWindow()
+
         {
             InitializeComponent();
         }
-
-
-        /// Obsługa kliknięcia przycisku "Zaloguj się"
 
         private void BtnGoToLogin_Click(object sender, RoutedEventArgs e)
         {

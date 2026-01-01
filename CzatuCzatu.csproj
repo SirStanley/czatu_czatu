@@ -1,21 +1,31 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<UseWindowsForms>true</UseWindowsForms>
 
-  <ItemGroup>
-    <Folder Include="Assets\" />
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
+		<TargetPlatformMinVersion>7.0</TargetPlatformMinVersion>
+		<SupportedOSPlatform>windows</SupportedOSPlatform>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<Folder Include="ViewModels\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="MySqlConnector" Version="2.5.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+		<PackageReference Include="MySqlConnector" Version="2.5.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Assets\ringtone.wav">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
 </Project>

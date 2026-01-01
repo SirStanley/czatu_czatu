@@ -7,8 +7,11 @@ using System.Text.RegularExpressions;
 
 namespace CzatuCzatu.Views
 {
+    using MessageBox = System.Windows.MessageBox;
+    using MouseEventArgs = System.Windows.Input.MouseEventArgs;
     public partial class RegisterWindow : Window
     {
+
         private DatabaseService _dbService = new DatabaseService();
 
         public RegisterWindow()
@@ -22,7 +25,7 @@ namespace CzatuCzatu.Views
             string pass = TxtPassword.Password;
             string confirm = TxtConfirmPassword.Password;
 
-            // --- TWOJA WERYFIKACJA DANYCH ---
+            // --- WERYFIKACJA DANYCH ---
 
             // 1. Czy pola nie są puste?
             if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(pass))
@@ -45,14 +48,14 @@ namespace CzatuCzatu.Views
                 return;
             }
 
-            // --- ZAPIS DO BAZY ---
+            // --- ZAPIS DO BAZY Z HASZOWANIEM ---
             try
             {
                 using (var conn = _dbService.GetConnection())
                 {
                     conn.Open();
 
-                    // Sprawdzenie czy użytkownik już istnieje (prewencja duplikatów)
+                    // Sprawdzenie czy użytkownik już istnieje
                     string checkSql = "SELECT COUNT(*) FROM users WHERE username = @user";
                     using (var checkCmd = new MySqlCommand(checkSql, conn))
                     {
@@ -65,12 +68,16 @@ namespace CzatuCzatu.Views
                         }
                     }
 
-                    // Wstawienie nowego użytkownika
+                    // --- KLUCZOWA ZMIANA: HASZOWANIE HASŁA ---
+                    // Używamy PasswordService do zamiany czystego tekstu na bezpieczny hash
+                    string hashedPassword = PasswordService.HashPassword(pass);
+
+                    // Wstawienie nowego użytkownika (zapisujemy HASH, nie hasło)
                     string insertSql = "INSERT INTO users (username, password_hash) VALUES (@user, @pass)";
                     using (var insertCmd = new MySqlCommand(insertSql, conn))
                     {
                         insertCmd.Parameters.AddWithValue("@user", user);
-                        insertCmd.Parameters.AddWithValue("@pass", pass); // Na razie tekst jawny, potem dodamy haszowanie
+                        insertCmd.Parameters.AddWithValue("@pass", hashedPassword);
 
                         insertCmd.ExecuteNonQuery();
                     }
@@ -95,16 +102,14 @@ namespace CzatuCzatu.Views
             welcome.Show();
             this.Close();
         }
-        // --- Logika dla pierwszego hasła ---
-        // --- OBSŁUGA PIERWSZEGO HASŁA ---
-        // 1. Metoda wywoływana przy naciśnięciu (MouseDown)
+
+        // --- OBSŁUGA PODGLĄDU HASEŁ ---
+
         private void BtnShowAllPasswords_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            // Przepisujemy wartości do obu pól tekstowych
             TxtVisiblePassword.Text = TxtPassword.Password;
             TxtVisibleConfirmPassword.Text = TxtConfirmPassword.Password;
 
-            // Odkrywamy oba TextBoxy
             TxtPassword.Visibility = Visibility.Collapsed;
             TxtVisiblePassword.Visibility = Visibility.Visible;
 
@@ -112,19 +117,16 @@ namespace CzatuCzatu.Views
             TxtVisibleConfirmPassword.Visibility = Visibility.Visible;
         }
 
-        // 2. Metoda wywoływana przy puszczeniu przycisku (MouseUp)
         private void BtnShowAllPasswords_MouseUp(object sender, MouseButtonEventArgs e)
         {
             HideAllPasswords();
         }
 
-        // 3. Metoda wywoływana przy zjechaniu myszką z ikony (MouseLeave)
         private void BtnShowAllPasswords_MouseLeave(object sender, MouseEventArgs e)
         {
             HideAllPasswords();
         }
 
-        // Funkcja pomocnicza ukrywająca tekst w obu polach
         private void HideAllPasswords()
         {
             TxtVisiblePassword.Visibility = Visibility.Collapsed;

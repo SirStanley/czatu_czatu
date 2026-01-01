@@ -1,5 +1,5 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
+using System.Runtime.Versioning;
 using CzatuCzatu.Services;
 using CzatuCzatu.Models;
 using MySqlConnector;
@@ -7,6 +7,9 @@ using System.Windows.Input;
 
 namespace CzatuCzatu.Views
 {
+    using MessageBox = System.Windows.MessageBox;
+    using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+    [SupportedOSPlatform("windows")]
     public partial class LoginWindow : Window
     {
         private DatabaseService _dbService = new DatabaseService();
@@ -33,15 +36,16 @@ namespace CzatuCzatu.Views
                 {
                     conn.Open();
 
-                    // 1. Sprawdzamy czy użytkownik istnieje
-                    string sql = "SELECT id, username FROM users WHERE username = @user AND password_hash = @pass";
+                    // 1. Pobieramy ID, Nazwę i HASH hasła dla podanego loginu
+                    string sql = "SELECT id, username, password_hash FROM users WHERE username = @user";
+
                     int loggedUserId = -1;
                     string loggedUsername = "";
+                    string storedHash = "";
 
                     using (var cmd = new MySqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@user", user);
-                        cmd.Parameters.AddWithValue("@pass", pass);
 
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -49,13 +53,14 @@ namespace CzatuCzatu.Views
                             {
                                 loggedUserId = reader.GetInt32("id");
                                 loggedUsername = reader.GetString("username");
+                                storedHash = reader.GetString("password_hash");
                             }
                         }
                     }
-
-                    // 2. Jeśli logowanie się powiodło
-                    if (loggedUserId != -1)
+                    // 2. Weryfikacja hasła za pomocą BCrypt
+                    if (loggedUserId != -1 && PasswordService.VerifyPassword(pass, storedHash))
                     {
+                        // Logowanie pomyślne - zapisujemy sesję
                         UserSession.CurrentUserId = loggedUserId;
                         UserSession.CurrentUsername = loggedUsername;
 
@@ -75,6 +80,7 @@ namespace CzatuCzatu.Views
                     }
                     else
                     {
+                        // Jeden komunikat dla obu przypadków 
                         MessageBox.Show("Błędny login lub hasło.", "Błąd logowania", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
@@ -91,6 +97,13 @@ namespace CzatuCzatu.Views
             this.Close();
         }
 
+        private void BtnGoToRegister_Click(object sender, RoutedEventArgs e)
+        {
+            RegisterWindow regWin = new RegisterWindow();
+            regWin.Show();
+            this.Close();
+        }
+
         private void BtnShowPassword_MouseDown(object sender, MouseButtonEventArgs e)
         {
             TxtVisiblePassword.Text = TxtPassword.Password;
@@ -98,13 +111,11 @@ namespace CzatuCzatu.Views
             TxtVisiblePassword.Visibility = Visibility.Visible;
         }
 
-        // Zmiana na MouseButtonEventArgs (dla PreviewMouseUp/MouseUp)
         private void BtnShowPassword_MouseUp(object sender, MouseButtonEventArgs e)
         {
             HidePassword();
         }
 
-        // MouseEventArgs jest OK dla MouseLeave
         private void BtnShowPassword_MouseLeave(object sender, MouseEventArgs e)
         {
             HidePassword();
@@ -115,12 +126,6 @@ namespace CzatuCzatu.Views
             TxtVisiblePassword.Visibility = Visibility.Collapsed;
             TxtPassword.Visibility = Visibility.Visible;
             TxtPassword.Focus();
-        }
-        private void BtnGoToRegister_Click(object sender, RoutedEventArgs e)
-        {
-            RegisterWindow regWin = new RegisterWindow();
-            regWin.Show();
-            this.Close();
         }
     }
 }
