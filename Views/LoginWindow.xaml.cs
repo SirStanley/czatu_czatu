@@ -72,15 +72,12 @@ namespace CzatuCzatu.Views
                             updateCmd.ExecuteNonQuery();
                         }
 
-                        MessageBox.Show($"Witaj {UserSession.CurrentUsername}! Logowanie pomyślne.", "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);
-
                         MainWindow chatWin = new MainWindow();
                         chatWin.Show();
                         this.Close();
                     }
                     else
                     {
-                        // Jeden komunikat dla obu przypadków 
                         MessageBox.Show("Błędny login lub hasło.", "Błąd logowania", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using CzatuCzatu.Services;
 using MySqlConnector;
 using System.Windows.Input;
@@ -25,30 +24,24 @@ namespace CzatuCzatu.Views
             string pass = TxtPassword.Password;
             string confirm = TxtConfirmPassword.Password;
 
-            // --- WERYFIKACJA DANYCH ---
-
-            // 1. Czy pola nie są puste?
             if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(pass))
             {
                 MessageBox.Show("Uzupełnij wszystkie pola!", "Błąd walidacji", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // 2. Czy hasła się zgadzają?
             if (pass != confirm)
             {
                 MessageBox.Show("Hasła muszą być identyczne!", "Błąd walidacji", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // 3. Walidacja znaków (tylko litery i cyfry, min 3 znaki)
             if (!Regex.IsMatch(user, @"^[a-zA-Z0-9]{3,20}$"))
             {
                 MessageBox.Show("Login musi mieć od 3 do 20 znaków (tylko litery i cyfry)!", "Błąd walidacji", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // --- ZAPIS DO BAZY Z HASZOWANIEM ---
             try
             {
                 using (var conn = _dbService.GetConnection())
@@ -68,11 +61,9 @@ namespace CzatuCzatu.Views
                         }
                     }
 
-                    // --- KLUCZOWA ZMIANA: HASZOWANIE HASŁA ---
-                    // Używamy PasswordService do zamiany czystego tekstu na bezpieczny hash
                     string hashedPassword = PasswordService.HashPassword(pass);
 
-                    // Wstawienie nowego użytkownika (zapisujemy HASH, nie hasło)
+                    // Wstawienie nowego użytkownika 
                     string insertSql = "INSERT INTO users (username, password_hash) VALUES (@user, @pass)";
                     using (var insertCmd = new MySqlCommand(insertSql, conn))
                     {
@@ -103,7 +94,6 @@ namespace CzatuCzatu.Views
             this.Close();
         }
 
-        // --- OBSŁUGA PODGLĄDU HASEŁ ---
 
         private void BtnShowAllPasswords_MouseDown(object sender, MouseButtonEventArgs e)
         {

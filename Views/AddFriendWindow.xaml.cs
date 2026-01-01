@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using CzatuCzatu.Models;
 using CzatuCzatu.Services;
 using MySqlConnector;
@@ -7,7 +6,6 @@ using MySqlConnector;
 namespace CzatuCzatu.Views;
 
 using MessageBox = System.Windows.MessageBox;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 public partial class AddFriendWindow : Window
 {
 
@@ -29,7 +27,6 @@ public partial class AddFriendWindow : Window
             {
                 conn.Open();
 
-                // 1. Szukamy użytkownika po ID lub Nazwie
                 string findSql = "SELECT id FROM users WHERE (id = @input OR username = @input) AND id != @myId";
                 int targetUserId = 0;
 
@@ -47,7 +44,6 @@ public partial class AddFriendWindow : Window
                     targetUserId = Convert.ToInt32(result);
                 }
 
-                // 2. Sprawdzamy, czy już nie jesteście znajomymi
                 string checkSql = "SELECT COUNT(*) FROM friends WHERE (user_id = @myId AND friend_id = @targetId) OR (user_id = @targetId AND friend_id = @myId)";
                 using (var cmdCheck = new MySqlCommand(checkSql, conn))
                 {
@@ -60,7 +56,6 @@ public partial class AddFriendWindow : Window
                     }
                 }
 
-                // 3. Dodajemy relację (domyślnie 'accepted' dla uproszczenia projektu)
                 string insertSql = "INSERT INTO friends (user_id, friend_id, status) VALUES (@myId, @targetId, 'accepted')";
                 using (var cmdInsert = new MySqlCommand(insertSql, conn))
                 {
@@ -70,7 +65,7 @@ public partial class AddFriendWindow : Window
                 }
 
                 MessageBox.Show("Dodano do znajomych!", "Sukces");
-                this.DialogResult = true; // Informuje MainWindow, że dodano kogoś
+                this.DialogResult = true; 
                 this.Close();
             }
         }

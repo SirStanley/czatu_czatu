@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="Czatu-Czatu" Height="650" Width="1000"
-        WindowStartupLocation="CenterScreen" Background="#F0F2F5">
+        MinWidth="1000" MinHeight="650"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen" Background="#F0F2F5"
+        Icon="pack://application:,,,/Assets/favicon.ico">
 
     <Window.Resources>
         <Style x:Key="ModernButton" TargetType="Button">
@@ -53,14 +56,13 @@
                 <Border Grid.Row="0" Background="#F8F9FA" Padding="15" BorderBrush="#EEEEEE" BorderThickness="0,0,0,1">
                     <Grid>
                         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Center">
-                            <TextBlock x:Name="LblCurrentUsername" Text="Mój Profil" FontSize="18" FontWeight="Bold" Foreground="#007ACC"/>
+                            <TextBlock x:Name="LblCurrentUsername" Text="Mój Profil" FontSize="18" FontWeight="Bold" Foreground="#007ACC" Cursor="Help"/>
                             <TextBlock Text="Dostępny" FontSize="12" Foreground="Green"/>
+                            <TextBlock x:Name="LblMyId" Text="ID: ---" FontSize="10" Foreground="#888" Margin="0,2,0,0"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-
-                            <Button x:Name="BtnHide" Width="32" Height="32" Click="BtnHide_Click" 
-                                    Margin="0,0,8,0" Cursor="Hand" ToolTip="Minimalizuj do zasobnika">
+                            <Button x:Name="BtnHide" Width="32" Height="32" Click="BtnHide_Click" Margin="0,0,8,0" ToolTip="Minimalizuj do zasobnika">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Grid>
@@ -79,8 +81,7 @@
                                 </Button.Template>
                             </Button>
 
-                            <Button x:Name="BtnLogout" Width="32" Height="32" Click="BtnLogout_Click"
-                                    Cursor="Hand" ToolTip="Wyloguj">
+                            <Button x:Name="BtnLogout" Width="32" Height="32" Click="BtnLogout_Click" ToolTip="Wyloguj">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Grid>
@@ -116,9 +117,7 @@
                                         </Grid>
                                         <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontSize="15" FontWeight="SemiBold" Foreground="#333"/>
                                     </StackPanel>
-                                    <Border Background="#FF4444" CornerRadius="8" Padding="6,2" 
-                                            HorizontalAlignment="Right" VerticalAlignment="Center" 
-                                            Visibility="{Binding NewBadgeVisibility}">
+                                    <Border Background="#FF4444" CornerRadius="8" Padding="6,2" HorizontalAlignment="Right" VerticalAlignment="Center" Visibility="{Binding NewBadgeVisibility}">
                                         <TextBlock Text="NEW" FontSize="9" FontWeight="Bold" Foreground="White"/>
                                     </Border>
                                 </Grid>
@@ -127,28 +126,12 @@
                                 <Trigger Property="IsMouseOver" Value="True">
                                     <Setter TargetName="ItemBorder" Property="Background" Value="#E7F3FF"/>
                                 </Trigger>
-                                <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" Value="True">
-                                    <Setter TargetName="ItemBorder" Property="Background" Value="#E7F3FF"/>
-                                </DataTrigger>
                             </DataTemplate.Triggers>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="ListBoxItem">
-                                        <ContentPresenter />
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
                 </ListBox>
 
-                <Button Grid.Row="2" Content="+ Dodaj znajomego" 
-                        Style="{StaticResource ModernButton}" 
-                        Margin="15" Height="40" Click="BtnAddFriend_Click"/>
+                <Button Grid.Row="2" Content="+ Dodaj znajomego" Style="{StaticResource ModernButton}" Margin="15" Height="40" Click="BtnAddFriend_Click"/>
             </Grid>
         </Border>
 
@@ -174,25 +157,9 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-
-                    <Button Grid.Column="0" x:Name="BtnAttachFile" Content="📎" Width="40" Height="40" 
-                            FontSize="18" Background="Transparent" BorderThickness="0" Cursor="Hand"
-                            Click="BtnAttachFile_Click" Margin="0,0,10,0"/>
-
-                    <TextBox Grid.Column="1" x:Name="TxtMessage" Padding="15,8" FontSize="14" 
-                             VerticalContentAlignment="Center" BorderBrush="#D1D1D1" 
-                             AcceptsReturn="False">
-                        <TextBox.Resources>
-                            <Style TargetType="{x:Type Border}">
-                                <Setter Property="CornerRadius" Value="20"/>
-                            </Style>
-                        </TextBox.Resources>
-                    </TextBox>
-
-                    <Button Grid.Column="2" x:Name="BtnSendMessage" Content="Wyślij" 
-                            Style="{StaticResource ModernButton}" 
-                            Width="90" Height="40" Margin="10,0,0,0" 
-                            Click="BtnSendMessage_Click" IsDefault="True"/>
+                    <Button Grid.Column="0" x:Name="BtnAttachFile" Content="📎" Width="40" Height="40" FontSize="18" Background="Transparent" BorderThickness="0" Cursor="Hand" Click="BtnAttachFile_Click" Margin="0,0,10,0"/>
+                    <TextBox Grid.Column="1" x:Name="TxtMessage" Padding="15,8" FontSize="14" VerticalContentAlignment="Center" BorderBrush="#D1D1D1" AcceptsReturn="False"/>
+                    <Button Grid.Column="2" x:Name="BtnSendMessage" Content="Wyślij" Style="{StaticResource ModernButton}" Width="90" Height="40" Margin="10,0,0,0" Click="BtnSendMessage_Click" IsDefault="True"/>
                 </Grid>
             </Border>
         </Grid>

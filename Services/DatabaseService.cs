@@ -13,7 +13,6 @@ namespace CzatuCzatu.Services
             return new MySqlConnection(_connectionString);
         }
 
-        // Prosta metoda testowa, którą zaraz wykorzystamy
         public bool TestConnection()
         {
             try
@@ -26,7 +25,7 @@ namespace CzatuCzatu.Services
             }
             catch (Exception ex)
             {
-                // Jeśli nie zadziała, wypisze błąd w konsoli Visual Studio
+               
                 System.Diagnostics.Debug.WriteLine("Błąd bazy: " + ex.Message);
                 return false;
             }

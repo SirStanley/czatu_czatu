@@ -1,12 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Microsoft.Win32;
 using CzatuCzatu.Models;
 using CzatuCzatu.Services;
 using MySqlConnector;
@@ -15,10 +12,7 @@ using System.Runtime.Versioning;
 
 namespace CzatuCzatu.Views
 {
-    // ALIASY WEWNĄTRZ NAMESPACE - Rozwiązują błędy niejednoznaczności
     using Forms = System.Windows.Forms;
-    using Application = System.Windows.Application;
-    using MouseEventArgs = System.Windows.Input.MouseEventArgs;
     using MessageBox = System.Windows.MessageBox;
     using HorizontalAlignment = System.Windows.HorizontalAlignment;
     using Cursors = System.Windows.Input.Cursors;
@@ -48,6 +42,8 @@ namespace CzatuCzatu.Views
             if (UserSession.CurrentUsername != null)
             {
                 LblCurrentUsername.Text = UserSession.CurrentUsername;
+                LblMyId.Text = $"Twoje ID: {UserSession.CurrentUserId}";
+                LblCurrentUsername.ToolTip = $"Twój unikalny numer: {UserSession.CurrentUserId}";
             }
 
             // Test połączenia
@@ -105,8 +101,6 @@ namespace CzatuCzatu.Views
                 _contactUpdateCounter = 0;
             }
         }
-
-        // --- POWIADOMIENIA ---
         private void PlayNotificationSound()
         {
             try
@@ -132,7 +126,6 @@ namespace CzatuCzatu.Views
 
         private void LoadMessages(int friendId)
         {
-            // Sprawdzamy, czy użytkownik jest na samym dole przed odświeżeniem
             bool isAtBottom = ChatScrollViewer.VerticalOffset >= ChatScrollViewer.ScrollableHeight;
 
             try
@@ -140,13 +133,13 @@ namespace CzatuCzatu.Views
                 using (var conn = _dbService.GetConnection())
                 {
                     conn.Open();
-                    // JOIN pozwala nam wyciągnąć imię nadawcy bezpośrednio z bazy
+                  
                     string sql = @"SELECT m.sender_id, u.username, m.content, m.message_type, m.file_data, m.file_name 
-                           FROM messages m
-                           JOIN users u ON m.sender_id = u.id
-                           WHERE (m.sender_id = @myId AND m.receiver_id = @friendId) 
-                              OR (m.sender_id = @friendId AND m.receiver_id = @myId) 
-                           ORDER BY m.sent_at ASC";
+                               FROM messages m
+                               JOIN users u ON m.sender_id = u.id
+                               WHERE (m.sender_id = @myId AND m.receiver_id = @friendId) 
+                                  OR (m.sender_id = @friendId AND m.receiver_id = @myId) 
+                               ORDER BY m.sent_at ASC";
 
                     using (var cmd = new MySqlCommand(sql, conn))
                     {
@@ -160,7 +153,6 @@ namespace CzatuCzatu.Views
                             string lastMessageSnippet = "";
                             bool hasNewIncomingMessage = false;
 
-                            // CZYŚCIMY LISTĘ PRZED DODANIEM 
                             ChatItemsControl.Items.Clear();
 
                             while (reader.Read())
@@ -171,7 +163,6 @@ namespace CzatuCzatu.Views
                                 string content = reader.IsDBNull(reader.GetOrdinal("content")) ? "" : reader.GetString("content");
                                 string type = reader.IsDBNull(reader.GetOrdinal("message_type")) ? "text" : reader.GetString("message_type");
 
-                                // TUTAJ BYŁ BŁĄD - brakowało tych definicji:
                                 string? fName = reader.IsDBNull(reader.GetOrdinal("file_name")) ? null : reader.GetString("file_name");
                                 byte[]? data = reader.IsDBNull(reader.GetOrdinal("file_data")) ? null : (byte[])reader["file_data"];
 
@@ -188,8 +179,6 @@ namespace CzatuCzatu.Views
                                     lastMessageSnippet = type == "text" ? content : (type == "image" ? "📸 Przesłał(a) zdjęcie" : "📄 Przesłał(a) plik");
                                 }
                             }
-
-                            // Wyświetlamy dymek tylko jeśli to faktycznie nowa wiadomość (nie przy starcie)
                             if (hasNewIncomingMessage && _lastMessageCount > 0)
                             {
                                 PlayNotificationSound();
@@ -247,11 +236,13 @@ namespace CzatuCzatu.Views
 
             ChatItemsControl.Items.Add(bubble);
         }
+
         private void BtnHide_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
             ShowNotification("Czatu-Czatu", "Aplikacja działa w tle.");
         }
+
         private void SaveFileToDisk(byte[]? data, string? fileName)
         {
             if (data == null || string.IsNullOrEmpty(fileName)) return;
@@ -280,7 +271,6 @@ namespace CzatuCzatu.Views
             return image;
         }
 
-        // --- LOGIKA KONTAKTÓW I SYSTEMU ---
         private void LoadContacts()
         {
             int selectedId = (_activeChatId != 0) ? _activeChatId : -1;
@@ -430,6 +420,32 @@ namespace CzatuCzatu.Views
             public bool HasNewMessages { get; set; }
             public Visibility NewBadgeVisibility => HasNewMessages ? Visibility.Visible : Visibility.Collapsed;
             public override string ToString() => Name;
+        }
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                using (var conn = _dbService.GetConnection())
+                {
+                    conn.Open();
+                    using (var cmd = new MySqlCommand("UPDATE users SET is_online = 0 WHERE id = @id", conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", UserSession.CurrentUserId);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Błąd podczas wylogowywania (OnClosing): " + ex.Message);
+            }
+            finally
+            {
+                _timer?.Stop();
+                _notifyIcon?.Dispose();
+            }
+
+            base.OnClosing(e); 
         }
     }
 }
