@@ -5,53 +5,72 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CzatuCzatu.Views"
         mc:Ignorable="d"
-        Title="WelcomeWindow" Height="450" Width="800"
-        WindowStartupLocation="CenterScreen">
+        Title="Witamy w Czatu-Czatu" Height="450" Width="600"
+        WindowStartupLocation="CenterScreen"
+        Icon="pack://application:,,,/Assets/favicon.ico"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <Style x:Key="ModernWelcomeButton" TargetType="Button">
+            <Setter Property="Background" Value="#007ACC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Width" Value="220"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Margin" Value="0,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" 
+                                CornerRadius="8" BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#005A9E"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#004578"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Grid Background="#F7F9FC">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Border Background="#007ACC" Width="80" Height="80" CornerRadius="20" Margin="0,0,0,20">
-                    <TextBlock Text="💬" FontSize="40" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                </Border>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
 
-                <TextBlock Text="Witamy w czatu-czatu" 
-                   FontSize="28" 
-                   FontWeight="Bold" 
-                   Foreground="#333" 
-                   HorizontalAlignment="Center"/>
+            <Image Source="pack://application:,,,/Assets/favicon.ico" 
+                   Width="85" Height="85" 
+                   Margin="0,0,0,20" />
 
-                <TextBlock Text="Twoje bezpieczne miejsce do rozmów" 
-                   FontSize="14" 
-                   Foreground="#777" 
-                   Margin="0,5,0,40"
-                   HorizontalAlignment="Center"/>
+            <TextBlock Text="Witamy w czatu-czatu" 
+                       FontSize="28" 
+                       FontWeight="Bold" 
+                       Foreground="#333" 
+                       HorizontalAlignment="Center"/>
 
-                <Button x:Name="BtnGoToLogin" 
-                Content="Zaloguj się" 
-                Width="220" Height="45" 
-                Background="#007ACC" Foreground="White" 
-                FontSize="16" FontWeight="SemiBold"
-                BorderThickness="0" Margin="0,5"
-                Click="BtnGoToLogin_Click">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
+            <TextBlock Text="Twoje bezpieczne miejsce do rozmów" 
+                       FontSize="14" 
+                       Foreground="#777" 
+                       Margin="0,5,0,40"
+                       HorizontalAlignment="Center"/>
 
-                <Button x:Name="BtnGoToRegister" 
-                Content="Zarejestruj się" 
-                Width="220" Height="45" 
-                Background="White" Foreground="#007ACC" 
-                FontSize="16" FontWeight="SemiBold"
-                BorderBrush="#007ACC" BorderThickness="1" Margin="0,5"
-                Click="BtnGoToRegister_Click">
-                    <Button.Resources>
-                        <Style TargetType="Border">
-                            <Setter Property="CornerRadius" Value="8"/>
-                        </Style>
-                    </Button.Resources>
-                </Button>
-            </StackPanel>
-        </Grid>
+            <Button x:Name="BtnGoToLogin" 
+                    Content="Zaloguj się" 
+                    Style="{StaticResource ModernWelcomeButton}"
+                    Click="BtnGoToLogin_Click"/>
+
+            <Button x:Name="BtnGoToRegister" 
+                    Content="Zarejestruj się" 
+                    Style="{StaticResource ModernWelcomeButton}"
+                    Click="BtnGoToRegister_Click"/>
+
+        </StackPanel>
+    </Grid>
 </Window>

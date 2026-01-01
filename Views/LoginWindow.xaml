@@ -1,7 +1,8 @@
 ﻿<Window x:Class="CzatuCzatu.Views.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Logowanie - CzatuCzatu" Height="450" Width="400" WindowStartupLocation="CenterScreen">
+        Title="Logowanie - CzatuCzatu" Height="450" Width="600" WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
     <Grid Background="#F7F9FC">
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="300">
             <TextBlock Text="Logowanie" FontSize="24" FontWeight="Bold" Margin="0,0,0,20" HorizontalAlignment="Center"/>

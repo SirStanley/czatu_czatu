@@ -10,6 +10,7 @@
 
 		<TargetPlatformMinVersion>7.0</TargetPlatformMinVersion>
 		<SupportedOSPlatform>windows</SupportedOSPlatform>
+		<ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -26,6 +27,7 @@
 		<Content Include="Assets\ringtone.wav">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<Resource Include="Assets\favicon.ico" />
 	</ItemGroup>
 
 </Project>

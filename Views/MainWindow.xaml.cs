@@ -71,6 +71,22 @@ namespace CzatuCzatu.Views
                 _notifyIcon.Icon = System.Drawing.Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetExecutingAssembly().Location);
                 _notifyIcon.Visible = true;
                 _notifyIcon.Text = "Czatu-Czatu";
+
+                _notifyIcon.MouseDoubleClick += (s, e) => {
+                    if (e.Button == Forms.MouseButtons.Left)
+                    {
+                        this.Show();
+                        this.WindowState = WindowState.Normal;
+                        this.Activate();
+                    }
+                };
+
+                // Przywracanie po kliknięciu w dymek
+                _notifyIcon.BalloonTipClicked += (s, e) => {
+                    this.Show();
+                    this.WindowState = WindowState.Normal;
+                    this.Activate();
+                };
             }
             catch { }
         }
@@ -144,7 +160,7 @@ namespace CzatuCzatu.Views
                             string lastMessageSnippet = "";
                             bool hasNewIncomingMessage = false;
 
-                            // CZYŚCIMY LISTĘ PRZED DODANIEM (dlatego rozmowa "znikała", jeśli pętla poniżej miała błąd)
+                            // CZYŚCIMY LISTĘ PRZED DODANIEM 
                             ChatItemsControl.Items.Clear();
 
                             while (reader.Read())
@@ -231,7 +247,11 @@ namespace CzatuCzatu.Views
 
             ChatItemsControl.Items.Add(bubble);
         }
-
+        private void BtnHide_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            ShowNotification("Czatu-Czatu", "Aplikacja działa w tle.");
+        }
         private void SaveFileToDisk(byte[]? data, string? fileName)
         {
             if (data == null || string.IsNullOrEmpty(fileName)) return;
