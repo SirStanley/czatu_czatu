@@ -98,7 +98,11 @@ CzatuCzatu/
 
 ├── Assets/           # Zasoby wkompilowane w plik EXE (logo, ikony, dźwięki)
 
-├── architektura.jpg  # Schemat graficzny architektury systemu
+├──CzatuCzatu.csproj  # Główny plik konfiguracji projektu i zależności NuGet
+
+├──App.xaml          # Definicje globalnych stylów i zasobów wizualnych (XAML)
+
+├──App.xaml.cs       # Logika startowa, zarządzanie cyklem życia i procesami (C#)
 
 └── czatu_czatu_db.sql # Skrypt inicjalizujący strukturę bazy danych MySQL
 
@@ -143,4 +147,5 @@ Aplikacja została w pełni przystosowana do pracy na dwóch osobnych urządzeni
     * **Profil Sieci**: Ustaw profil sieciowy na **Prywatny** na obu urządzeniach. Zapobiegnie to blokowaniu pakietów ICMP (Ping) oraz błędowi "Connect Timeout expired".
 
       **PROSZE O PRZETESTOWANIE NASZEJ APLIKACJI I PODZIELENIE SIE PRZEMYSLENIAMI W CELU DALSZYCH USPRAWNIEŃ**
+
 
