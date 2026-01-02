@@ -87,12 +87,19 @@ Wybór technologii został podyktowany chęcią zapewnienia wysokiej wydajności
 Aplikacja została zorganizowana zgodnie z profesjonalnymi standardami projektowymi dla platformy .NET, co zapewnia przejrzystość kodu i ułatwia jego rozwój:
 
 CzatuCzatu/
+
 ├── Models/           # Klasy reprezentujące struktury danych (użytkownik, wiadomość, plik)
+
 ├── ViewModels/       # Logika biznesowa i powiązania danych z interfejsem (MVVM)
+
 ├── Views/            # Definicje interfejsu użytkownika w języku XAML
+
 ├── Services/         # Serwisy odpowiedzialne za komunikację z bazą danych
+
 ├── Assets/           # Zasoby wkompilowane w plik EXE (logo, ikony, dźwięki)
+
 ├── architektura.jpg  # Schemat graficzny architektury systemu
+
 └── czatu_czatu_db.sql # Skrypt inicjalizujący strukturę bazy danych MySQL
 
 ## 8. Proces uruchomienia projektu
@@ -136,3 +143,4 @@ Aplikacja została w pełni przystosowana do pracy na dwóch osobnych urządzeni
     * **Profil Sieci**: Ustaw profil sieciowy na **Prywatny** na obu urządzeniach. Zapobiegnie to blokowaniu pakietów ICMP (Ping) oraz błędowi "Connect Timeout expired".
 
       **PROSZE O PRZETESTOWANIE NASZEJ APLIKACJI I PODZIELENIE SIE PRZEMYSLENIAMI W CELU DALSZYCH USPRAWNIEŃ**
+
